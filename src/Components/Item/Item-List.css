@@ -1,0 +1,8 @@
+.list{
+    display: flex;
+    margin-left: 5rem;
+}
+
+.list button{
+    margin-left: 5px;
+}
