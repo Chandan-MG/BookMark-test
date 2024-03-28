@@ -1,36 +1,35 @@
-import React,{useEffect, useState} from 'react';
-import ReactDOM from 'react-dom';
-import AddItemForm from '../Item/AddItem';
+// Modal.js
+import React, { useState, useContext } from 'react';
+import { ItemContext } from '../Item/ItemContext.js';
 
-const Modal = ({ isOpen, onClose, onAddItem, editItem, onUpdate }) => {
-  const [name, setName] = useState('');
-//   if (!isOpen) return null;
-
-  useEffect(() => {
-    if (editItem) {
-      setName(editItem.name);
-    }
-  }, [editItem]);
+function Modal() {
+  const { isOpen, closeModal, currentItem, addItem, updateItem } = useContext(ItemContext);
+  const [itemName, setItemName] = useState(currentItem ? currentItem.name : '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    onUpdate({ ...editItem, name });
+    if (!itemName.trim()) return;
+    if (currentItem) {
+      updateItem({ ...currentItem, name: itemName });
+    } else {
+      addItem(itemName);
+    }
+    setItemName('');
+    closeModal();
   };
 
   return isOpen ? (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <AddItemForm
-          onAddItem= {onAddItem}
-          itemName={name}
-          onItemNameChange={(newName) => setName(newName)}
-          onSubmit={handleSubmit}
-          onCancel={onClose}
-        />
+    <div>
+      <div onClick={(e) => e.stopPropagation()}>
+        <h2>{currentItem ? 'Edit Item' : 'Add New Item'}</h2>
+        <form onSubmit={handleSubmit}>
+          <input type="text" value={itemName} onChange={(e) => setItemName(e.target.value)} />
+          <button type="submit">{currentItem ? 'Update' : 'Add'}</button>
+          <button onClick={closeModal}>Cancel</button>
+        </form>
       </div>
     </div>
   ) : null;
-};
+}
 
 export default Modal;
